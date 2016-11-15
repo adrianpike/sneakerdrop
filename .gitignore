@@ -1,0 +1,11 @@
+*.swp
+.DS_Store
+
+*.snk
+*.snk.bak
+
+coverage/
+
+spec/tmp
+
+.byebug_history

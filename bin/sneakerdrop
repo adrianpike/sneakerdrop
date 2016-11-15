@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
+require 'sneakerdrop/ledger'
+require 'sneakerdrop/events'
+
+if ARGV[0]
+  l = Sneakerdrop::Ledger.new
+  @l = l
+end
+
+def receive_input(io)
+  Sneakerdrop::Events.read(io) do |evt|
+    payload = Sneakerdrop::MessagePayload.new(evt)
+    msg = payload.to_message
+
+    @l.record(msg)
+    @l.save!
+  end
+end
+
+STDERR.puts "\e[32m=== Sneakerdrop ===\e[0m"
+
+case ARGV[0]
+when "show"
+  STDERR.puts "\e[33m Dumping messages from #{l.path}; \e[0m"
+  l.messages.each do |id, msg|
+    puts "\n"
+    puts "\e[0m--- \n"
+    puts msg.body
+    puts "--- \n"
+    puts "#{msg.type}, sent at #{msg.timestamp} from #{msg.sender.email}"
+    puts msg.trusted ? "\e[32mVerified." : "\e[31mSignature DOES NOT match!"
+  end
+  STDERR.puts "\n\e[33m #{l.messages.count} messages displayed. \e[0m"
+when "broadcast", "b"
+  m = Sneakerdrop::Message.new
+  m.type = :broadcast
+  m.sender = Sneakerdrop::Sender.ourselves
+  STDERR.puts "\e[33m Broadcasting from #{Sneakerdrop::Sender.ourselves.email} to #{l.path} (and STDOUT).\e[0m"
+  STDERR.puts "\e[33m Type your message, and ^d to finish...\e[0m"
+  m.body = STDIN.read
+
+  l.record(m)
+  l.save!
+when "recv", "receive", "r"
+  STDERR.puts "\e[33m Receiving ledgers piped to STDIN and merging them to your ledger...\e[0m"
+  receive_input(STDIN)
+when "sync"
+  @path = ARGV[1]
+  STDERR.puts "\e[33m merging #{@path} to your ledger...\e[0m"
+  @io = File.open(@path, "r")
+  receive_input(@io)
+when "message"
+  m = Sneakerdrop::Message.new
+  m.type = :message
+  m.sender = `gpg --export --armor`
+  m.recipient = ARGV[1]
+  m.decrypted_body = STDIN.read
+
+  puts m.to_armored_s
+  l.record(m)
+  l.save!
+else
+  puts "\e[33mSneakerdrop is a tool for securely and anonymously sending messages between a group of people, via offline methods of communication.\e[0m"
+  puts "\e[33mFor more information, check out \e[36mhttp://github.com/adrianpike/sneakerdrop\e[33m."
+	puts "\n"
+  puts "\e[31m\t$ sneakerdrop show \t\e[33m# Read all the messages in your ledger."
+  puts "\e[31m\t$ sneakerdrop broadcast \t\e[33m# Broadcast a signed message, send to STDOUT, and add to your local message ledger."
+  puts "\e[31m\t$ sneakerdrop message RECIPIENT \e[33m# Direct a signed message to a user, send to STDOUT, and add to your local message ledger."
+  puts "\n"
+  puts "\e[31m\t$ sneakerdrop sync PATH\t\t\e[33m# Merge your local message ledger with another."
+  puts "\e[31m\t$ sneakerdrop receive \t\e[33m# Consume STDIN to add sneakerdrop messages to your local message ledger."
+end
