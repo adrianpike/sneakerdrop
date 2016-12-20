@@ -51,7 +51,30 @@ Due to the nature of this software, it's only fair to start with the gotchas;
 Quickstart
 ==========
 
-First things first, you'll need a working GPG installation.
+First things first, you'll need a working GPG installation. By default,
+we'll default to your signing key with GPG, but you can override this
+with the `SNEAKERDROP_SENDER` environment variable. Set this to the email
+or name of the private key you want to send.
+
+Now let's broadcast a message to the ledger!
+
+```bash
+$ bin/sneakerdrop broadcast
+(sea1)➜  sneakerdrop git:(master) ✗ bin/sneakerdrop broadcast
+=== Sneakerdrop ===
+Broadcasting from adrian@adrianpike.com to ledger.snk (and STDOUT).
+Type your message, and ^d to finish...
+Hey world! This is my first Sneakerdrop message. It's pretty cool - and it's going to save it in the ledger, signed by my key.
+
+^d
+Saving f5dd6aec-9518-42fa-b1b1-43b97d1f6b92...
+(sea1)➜  sneakerdrop git:(master) ✗
+```
+
+Neat! Now the file called `ledger.snk` has the contents of that message. You can
+share it with someone else at will. Also - STDIN and STDOUT are kept clean of
+unimportant stuff, so you can pipe it to/from packet radio interfaces, network
+pipes, and other fun.
 
 Implementation Details
 ======================

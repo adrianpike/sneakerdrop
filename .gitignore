@@ -1,8 +1,8 @@
 *.swp
 .DS_Store
 
-*.snk
-*.snk.bak
+ledger.snk
+ledger.snk.bak
 
 coverage/
 

@@ -4,6 +4,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'sneakerdrop/ledger'
 require 'sneakerdrop/events'
+require 'sneakerdrop/message_payload'
 
 if ARGV[0]
   l = Sneakerdrop::Ledger.new
@@ -44,6 +45,13 @@ when "broadcast", "b"
 
   l.record(m)
   l.save!
+
+  STDOUT.write(
+    Sneakerdrop::PREAMBLE + "\n" +
+    Sneakerdrop::MessagePayload.json_from_message(m) + "\n" +
+    Sneakerdrop::POSTAMBLE + "\n"
+  )
+
 when "recv", "receive", "r"
   STDERR.puts "\e[33m Receiving ledgers piped to STDIN and merging them to your ledger...\e[0m"
   receive_input(STDIN)
