@@ -7,6 +7,9 @@ non-realtime, potentially offline communication strategy.
 
 ---
 
+Sneakerdrop supports both one-to-one private messaging and one-to-many public
+broadcasting, even when individuals are separated by many hops.
+
 Imagine Alice and Bob need to pass messages, but don't want to reveal their
 presence directly to each other or to anyone monitoring them. Alice sends a
 message to her sneakerdrop, which adds it to a local `ledger`. She `syncs` the
@@ -46,6 +49,9 @@ Due to the nature of this software, it's only fair to start with the gotchas;
   (and you should), generate new keys.
 - sneakerdrop currently relies entirely on gpg. A zero-day in GPG is a zero-day
   in sneakerdrop.
+- It would be fairly trivial to observe traffic patterns of messaging, but the 
+  content is secure. If you're looking to remain invisible, you'll want to find
+  some way of adding cryptographically secure noise to hide real traffic within.
 - sneakerdrop is alpha software, and has not yet had a security audit.
 
 Quickstart
@@ -95,9 +101,9 @@ One-to-one messages must have a maximum expiration of 1 year.
 Roadmap
 =======
 
-- Move to Binary instead of ASCII armored. Maybe Base64?
-- Make a real spec
+- Make a real spec.
+- Rewrite the ledger format to be more compact, extensible, and introspectable.
 - Build non-Ruby reference implementations
-- Configuration and setup tool
+- Configuration and setup tooling.
 - Build real interface, including MessageDecorator
 
