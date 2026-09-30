@@ -1,0 +1,22 @@
+[package]
+name = "sneakerdrop"
+description = "Reference implementation of the Sneakerdrop v1 store-and-forward protocol"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+blake3.workspace = true
+chacha20poly1305.workspace = true
+curve25519-dalek.workspace = true
+data-encoding.workspace = true
+ed25519-dalek.workspace = true
+x25519-dalek.workspace = true
+rand_core.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+rand_chacha.workspace = true
+serde_json.workspace = true

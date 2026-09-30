@@ -1,0 +1,16 @@
+[package]
+name = "sneakerdrop-cli"
+description = "Command-line client for Sneakerdrop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "sneakerdrop"
+path = "src/main.rs"
+
+[dependencies]
+sneakerdrop.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+rand_core.workspace = true

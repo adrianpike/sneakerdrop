@@ -1,0 +1,64 @@
+{
+  "broadcast": {
+    "author": "alice",
+    "content_utf8": "Hello from the dead drop.",
+    "created": 1800000000,
+    "expires": 1800604800,
+    "record": {
+      "hex": "0101000000006b530c800000000000000007d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737000000006b49d2001948656c6c6f2066726f6d2074686520646561642064726f702e7c5be790bd22ff13464b80032997718aa9a3c3f71cddb76d5293295f9ac6c1eccc5fc110c8f89e85289df0650afd6104da564c24d05b16a7ddd524063814d909",
+      "id": "e8735c47dfcb93ed528b3d49248acee34e5f7701247dcac25e3fb28d3bf5b361",
+      "work": 0
+    },
+    "stamp": 7
+  },
+  "bundle": {
+    "armor_b32": "== SNEAKERDROP 1 B32 ==\nknceeaibsqaqcaiaaaaaa22tbsaaaaaaaaaaaaah2bflemtufo2kwoqtnc6umfpe\n43icesvxdiawxl4fecrtfslxq43qaaaaabvutuqadfegk3dmn4qgm4tpnuqhi2df\nebsgkyleebshe33qfz6fxz4qxurp6e2gjoaagkmxogfkti6d64on3n3nkkjssx42\ny3a6ztc7yeimr6e6quuj34dfbl6wcbg2kzgcjuc3c2t53vjeay4bjwijafjacaya\naaaaa22tbsaaaaaaaaaaaaaa3357iwh5cujn5335jlpaizahlk6wykimtveozrey\nln5xhe2q6upaidojlfsmp4rym467qupjkcfbd4dfamiuzrxw7qnssrqykuoju4yc\nirceirceirceirceirceirceiqbbs2mshdto2jgln42pdnru3g7yhrjlr3dq\n== PORDREKAENS ==\n",
+    "armor_b64": "== SNEAKERDROP 1 B64 ==\nU0RCAQGUAQEBAAAAAGtTDIAAAAAAAAAAB9BKsjJ0K7SrOhNovUYV5ObQIkq3GgFr\nr4UgozLJd4c3AAAAAGtJ0gAZSGVsbG8gZnJvbSB0aGUgZGVhZCBkcm9wLnxb55C9\nIv8TRkuAAymXcYqpo8P3HN23bVKTKV+axsHszF/BEMj4noUonfBlCv1hBNpWTCTQ\nWxan3dUkBjgU2QkBUgEDAAAAAGtTDIAAAAAAAAAAAN779Fj9FRLe731K3gRkB1q9\nbCkMnUjsxJhbe3OTUPUeBA3JWWTH8jhnPfhR6VCKEfBlAxFMxvb8GylGGFUcmnMC\nRERERERERERERERERERERAIZaZI45u0ky2808bY02b+DxSuOxw\n== PORDREKAENS ==\n",
+    "hex": "534442010194010101000000006b530c800000000000000007d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737000000006b49d2001948656c6c6f2066726f6d2074686520646561642064726f702e7c5be790bd22ff13464b80032997718aa9a3c3f71cddb76d5293295f9ac6c1eccc5fc110c8f89e85289df0650afd6104da564c24d05b16a7ddd524063814d90901520103000000006b530c800000000000000000defbf458fd1512deef7d4ade0464075abd6c290c9d48ecc4985b7b739350f51e040dc95964c7f238673df851e9508a11f06503114cc6f6fc1b294618551c9a7302444444444444444444444444444444440219699238e6ed24cb6f34f1b634d9bf83c52b8ec7",
+    "items": [
+      "broadcast",
+      "burn",
+      "summary(salt, [broadcast.id, sealed.id])"
+    ],
+    "summary_salt": "44444444444444444444444444444444"
+  },
+  "burn": {
+    "record": {
+      "hex": "0103000000006b530c800000000000000000defbf458fd1512deef7d4ade0464075abd6c290c9d48ecc4985b7b739350f51e040dc95964c7f238673df851e9508a11f06503114cc6f6fc1b294618551c9a73",
+      "id": "b249235da6d00f037b9581a5c649873199c5a6ab54d99daf6e441c15e91bfeb4",
+      "work": 0
+    },
+    "target": "sealed"
+  },
+  "description": "Sneakerdrop v1 test vectors. See docs/SPEC.md Appendix A.",
+  "identities": {
+    "alice": {
+      "address": "sd12bflemtufo2kwoqtnc6umfpe43icesvxdiawxl4fecrtfslxq43uk7ib",
+      "public_key": "d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737",
+      "seed": "1111111111111111111111111111111111111111111111111111111111111111",
+      "x25519_public": "7a46e129fd805047448437e4744f1f1576be8c449fdf57e0c580d36c5cfc6668"
+    },
+    "bob": {
+      "address": "sd1ucnkl5d2m5myal7zkx4nyljkcss4thjdx2l7qzasp74tqncvutykek7b",
+      "public_key": "a09aa5f47a6759802ff955f8dc2d2a14a5c99d23be97f864127ff9383455a4f0",
+      "seed": "2222222222222222222222222222222222222222222222222222222222222222",
+      "x25519_public": "9d8d78b9c9e6661e552f2f1af02095ee2f8743fa2e6183f41bb7077ef51b5379"
+    }
+  },
+  "sealed": {
+    "burn_hash": "27ca32480b6fb0d68146c3d41ec14e0672582480af550dd53beb9d25fd51e9c7",
+    "burn_secret": "040dc95964c7f238673df851e9508a11f06503114cc6f6fc1b294618551c9a73",
+    "content_utf8": "Meet at the usual place.",
+    "created": 1800000000,
+    "ephemeral_secret": "3333333333333333333333333333333333333333333333333333333333333333",
+    "expires": 1800604800,
+    "recipient": "bob",
+    "record": {
+      "hex": "0102000000006b530c80000000000000000327ca32480b6fb0d68146c3d41ec14e0672582480af550dd53beb9d25fd51e9c77b0d47d93427f8311160781c7c733fd89f88970aef490d8aa0ee19a4cb8a1b14b863d6f2326341c22aaf9362a8305337d8368d31f5bad6eeeb3c33370711a1493d4f7b1edda6d4e9c9f82babed074bfbb1a7daf0445ccaac5bfcff1248acfcf2d4ee34fc5ad0fdd76b01b9ef935c77a3ef371ff756a45289fd6b2e3ed5a11501bc6bffb747d0937b15294098e0edaac057fbea05ccc6102d15d93da07486c796a4e3f72740967f0ff253b89c3fc47bb3abd26da03420bcd916731161c02df1905cd3bf478f662593e825b0d6464106e3d33b4884df8caefa1c3e0571eb37f7faec88d1e8a5666be612925c41e34afbf5",
+      "id": "defbf458fd1512deef7d4ade0464075abd6c290c9d48ecc4985b7b739350f51e",
+      "work": 0
+    },
+    "sender": "alice",
+    "stamp": 3
+  }
+}

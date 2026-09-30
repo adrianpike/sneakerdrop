@@ -1,11 +1,4 @@
+/target
 *.swp
 .DS_Store
-
-ledger.snk
-ledger.snk.bak
-
-coverage/
-
-spec/tmp
-
-.byebug_history
+*.snk.tmp

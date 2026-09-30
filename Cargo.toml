@@ -1,0 +1,33 @@
+[workspace]
+resolver = "3"
+members = ["crates/sneakerdrop", "crates/sneakerdrop-cli", "crates/sneakerdrop-sim"]
+
+[workspace.package]
+version = "1.0.0-alpha.1"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/adrianpike/sneakerdrop"
+
+[workspace.dependencies]
+sneakerdrop = { path = "crates/sneakerdrop" }
+blake3 = "1.8"
+chacha20poly1305 = "0.10"
+curve25519-dalek = "4.1"
+data-encoding = "2.6"
+ed25519-dalek = { version = "2.2", features = ["rand_core", "zeroize"] }
+x25519-dalek = { version = "2.0", features = ["static_secrets", "zeroize"] }
+rand_core = { version = "0.6", features = ["getrandom"] }
+rand_chacha = "0.3"
+thiserror = "2"
+clap = { version = "4", features = ["derive"] }
+anyhow = "1"
+proptest = "1"
+serde_json = "1"
+
+# Signature verification dominates test and simulation time; optimize
+# dependencies even in debug builds.
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.test]
+opt-level = 1
