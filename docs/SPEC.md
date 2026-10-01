@@ -236,10 +236,10 @@ To seal `content` from sender `(sk_s, pk_s)` to recipient `pk_r`, valid until
 7. Form the plaintext:
 
    ```
-   inner = sender:bytes[32] ‖ created:u64 ‖ len:varint ‖ content:bytes[len] ‖ sig:bytes[64] ‖ pad
+   inner = sender:bytes[32] ‖ created:u64 ‖ ctype:u8 ‖ len:varint ‖ content:bytes[len] ‖ sig:bytes[64] ‖ pad
    ```
 
-   with `sender = pk_s` and
+   with `sender = pk_s`, `ctype` the content type of `content` (§5.4.3), and
    `sig = Ed25519-Sign(sk_s, TAG_SEALED ‖ 0x00 ‖ pk_r ‖ AD ‖ Q)`, where `Q` is
    `inner` up to but not including `sig`. `pad` is zero bytes: at least enough
    to make `len(inner)` a multiple of `PAD_BLOCK` (64) and at least 128 bytes
@@ -269,11 +269,27 @@ A node holding identity `(sk_r, pk_r)` attempts to open every sealed record
    If any check fails, the record is *forged*.
 
 The outcomes are therefore *not for us*, *forged*, or an authenticated message
-`(sender, created, content)`. Forged records remain in the ledger (relays
+`(sender, created, ctype, content)`. Forged records remain in the ledger (relays
 cannot tell them apart) but MUST NOT be displayed as authentic.
 
 After opening a message, the recipient holds `burn_secret` and may later burn
 it (§5.5).
+
+#### 5.4.3 Content types
+
+`ctype` says how to interpret `content`. It is inside the ciphertext, so relays
+cannot see it.
+
+| `ctype`       | Meaning                                                        |
+|---------------|----------------------------------------------------------------|
+| `0x00`        | Text: UTF-8, displayed to the user                             |
+| `0x01`–`0x7F` | Reserved for this specification and its extensions             |
+| `0x80`–`0xFF` | Application-defined or experimental; never assigned by the spec |
+
+A message with an unknown `ctype` is still authentic. Recipients MUST NOT
+display it as text, and SHOULD show that a message of that type arrived. A
+`ctype` is not a security boundary: anything a sender can put in one type, they
+can put in another.
 
 ### 5.5 Burn (`kind = 0x03`)
 
@@ -559,6 +575,7 @@ prefix-collision misses.
   petname. Sort by `created`, but remember that `created` is a claim by the
   author.
 - **Displaying sealed messages:** show only those that open successfully,
+  rendering them by `ctype` (§5.4.3),
   and mark *forged* ones as such or hide them.
 - **Burning:** after reading a message, the recipient MAY publish a burn. A
   sender MAY burn a message to retract it. Clients SHOULD delay and batch burns

@@ -21,6 +21,9 @@ pub const KIND_SEALED: u8 = 0x02;
 pub const KIND_BURN: u8 = 0x03;
 pub const HEADER_LEN: usize = 18;
 
+/// Content types of sealed plaintext (spec §5.4.3).
+pub const CTYPE_TEXT: u8 = 0x00;
+
 const SEALED_PREFIX_LEN: usize = HEADER_LEN + 64;
 const TAG_LEN: usize = 16;
 const MIN_INNER_LEN: usize = 128;
@@ -321,6 +324,7 @@ impl Record {
         let mut inner = Vec::new();
         inner.extend_from_slice(sender.public().as_bytes());
         inner.extend_from_slice(&opts.created.to_be_bytes());
+        inner.push(opts.ctype);
         put_varint(&mut inner, content.len() as u64);
         inner.extend_from_slice(content);
         let sig = sender.sign(TAG_SEALED, &[recipient.as_bytes(), &ad, &inner]);
@@ -367,6 +371,8 @@ pub struct SealOptions {
     pub created: u64,
     pub expires: u64,
     pub stamp: u64,
+    /// Content type of the plaintext (spec §5.4.3). Hidden inside the ciphertext.
+    pub ctype: u8,
     /// Pad the plaintext to at least this many bytes, to hide the content length.
     pub min_padded_len: usize,
 }
@@ -377,6 +383,7 @@ impl SealOptions {
             created,
             expires,
             stamp: 0,
+            ctype: CTYPE_TEXT,
             min_padded_len: 0,
         }
     }
@@ -405,6 +412,7 @@ pub struct Message {
     pub sender: PublicKey,
     pub created: u64,
     pub expires: u64,
+    pub ctype: u8,
     pub content: Vec<u8>,
     pub burn_secret: [u8; 32],
 }
@@ -441,11 +449,17 @@ impl Identity {
             return Opened::NotForUs;
         };
         match parse_inner(&inner, ad, &self.public(), record.expires) {
-            Some((sender, created, content)) => Opened::Message(Message {
+            Some(Inner {
+                sender,
+                created,
+                ctype,
+                content,
+            }) => Opened::Message(Message {
                 id: record.id,
                 sender,
                 created,
                 expires: record.expires,
+                ctype,
                 content,
                 burn_secret,
             }),
@@ -454,15 +468,18 @@ impl Identity {
     }
 }
 
-fn parse_inner(
-    inner: &[u8],
-    ad: &[u8],
-    recipient: &PublicKey,
-    expires: u64,
-) -> Option<(PublicKey, u64, Vec<u8>)> {
+struct Inner {
+    sender: PublicKey,
+    created: u64,
+    ctype: u8,
+    content: Vec<u8>,
+}
+
+fn parse_inner(inner: &[u8], ad: &[u8], recipient: &PublicKey, expires: u64) -> Option<Inner> {
     let mut r = Reader::new(inner);
     let sender = PublicKey::from_bytes(r.array().ok()?).ok()?;
     let created = r.u64().ok()?;
+    let ctype = r.u8().ok()?;
     let content = r.len_prefixed().ok()?;
     let signed_len = r.position();
     let sig: [u8; 64] = r.array().ok()?;
@@ -479,7 +496,12 @@ fn parse_inner(
     ) {
         return None;
     }
-    Some((sender, created, content.to_vec()))
+    Some(Inner {
+        sender,
+        created,
+        ctype,
+        content: content.to_vec(),
+    })
 }
 
 fn cipher(key: &[u8; 32]) -> ChaCha20Poly1305 {
@@ -551,7 +573,7 @@ pub const MAX_BROADCAST_CONTENT: usize = {
 
 /// Size of the sealed record for `content_len` bytes of content with default padding.
 pub fn sealed_record_len(content_len: usize) -> usize {
-    let inner = 32 + 8 + varint_len(content_len as u64) + content_len + 64;
+    let inner = 32 + 8 + 1 + varint_len(content_len as u64) + content_len + 64;
     SEALED_PREFIX_LEN + inner.next_multiple_of(PAD_BLOCK).max(MIN_INNER_LEN) + TAG_LEN
 }
 
@@ -647,6 +669,7 @@ mod tests {
             Opened::Message(m) => {
                 assert_eq!(m.sender, alice().public());
                 assert_eq!(m.content, b"psst");
+                assert_eq!(m.ctype, CTYPE_TEXT);
                 assert_eq!(m.created, T0);
                 assert_eq!(m.burn_secret, sealed.burn_secret);
             }
@@ -659,6 +682,20 @@ mod tests {
         for pk in [alice().public(), bob().public()] {
             assert!(!rec.bytes().windows(32).any(|w| w == pk.as_bytes()));
             assert!(!rec.bytes().windows(32).any(|w| w == pk.to_x25519()));
+        }
+    }
+
+    #[test]
+    fn ctype_is_carried_and_authenticated() {
+        let opts = SealOptions {
+            ctype: 0x81,
+            ..SealOptions::new(T0, T0 + 86400)
+        };
+        let sealed =
+            Record::new_sealed(&alice(), &bob().public(), &opts, b"{}", &mut rng()).unwrap();
+        match bob().open(&sealed.record) {
+            Opened::Message(m) => assert_eq!((m.ctype, &m.content[..]), (0x81, &b"{}"[..])),
+            other => panic!("{other:?}"),
         }
     }
 

@@ -79,6 +79,7 @@ fn generate() -> Value {
         "sealed": {
             "sender": "alice", "recipient": "bob", "created": CREATED, "expires": EXPIRES, "stamp": 3,
             "content_utf8": "Meet at the usual place.",
+            "ctype": 0,
             "ephemeral_secret": hex(&ephemeral),
             "burn_secret": hex(&sealed.burn_secret),
             "burn_hash": hex(&burn_hash(&sealed.burn_secret)),
@@ -139,6 +140,10 @@ fn vectors_verify_independently() {
     };
     assert_eq!(msg.sender, alice_pk);
     assert_eq!(msg.content, s("/sealed/content_utf8").as_bytes());
+    assert_eq!(
+        u64::from(msg.ctype),
+        v.pointer("/sealed/ctype").unwrap().as_u64().unwrap()
+    );
     assert_eq!(hex(&msg.burn_secret), s("/sealed/burn_secret"));
 
     let burn = Record::parse(unhex(&s("/burn/record/hex"))).unwrap();

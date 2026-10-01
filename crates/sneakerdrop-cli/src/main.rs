@@ -15,7 +15,7 @@ use rand_core::OsRng;
 use sneakerdrop::bundle::{decode_ledger_file, encode_bundle};
 use sneakerdrop::consts::MAX_TTL;
 use sneakerdrop::ledger::MergeStats;
-use sneakerdrop::record::grind;
+use sneakerdrop::record::{CTYPE_TEXT, grind};
 use sneakerdrop::sync::{missing, read_any, summarize};
 use sneakerdrop::{
     Encoding, Identity, Item, Ledger, Opened, Policy, PublicKey, Record, RecordId, SealOptions,
@@ -430,7 +430,7 @@ fn show(node: &Node, all: bool) -> Result<()> {
                         "--- message {id} to you from {} at {}\n{}",
                         m.sender,
                         m.created,
-                        String::from_utf8_lossy(&m.content)
+                        render(m.ctype, &m.content)
                     ),
                 )),
                 Some(Opened::Forged) => rows.push((
@@ -455,6 +455,18 @@ fn show(node: &Node, all: bool) -> Result<()> {
         node.ledger.len()
     );
     Ok(())
+}
+
+/// Renders message content by its content type (spec §5.4.3).
+fn render(ctype: u8, content: &[u8]) -> String {
+    if ctype == CTYPE_TEXT {
+        String::from_utf8_lossy(content).into_owned()
+    } else {
+        format!(
+            "[content type {ctype:#04x}, {} bytes, not shown]",
+            content.len()
+        )
+    }
 }
 
 fn find_record(ledger: &Ledger, prefix: &str) -> Result<Record> {
